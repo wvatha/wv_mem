@@ -1,7 +1,0 @@
-[user]
-	name = mfbarnable
-	email = mrbarnable@protonmail.com
-[credential]
-	helper = store
-[remote "origin"]
-	url = https://github.com/mrbarnable/wv_memory.git
