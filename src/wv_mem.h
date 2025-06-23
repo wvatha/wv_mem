@@ -14,7 +14,7 @@
 #define DLL_EXPORT __attribute__((visibility("default")))
 #define DLL_IMPORT __attribute__((visibility("default")))
 #endif // OS checks
-
+#include <stddef.h>
 
 DLL_EXPORT
 void* wv_allocate_huge(size_t size);

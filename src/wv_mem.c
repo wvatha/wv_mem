@@ -139,5 +139,22 @@ wv_allocate_huge(size_t size) {
     }
     return mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
 }
+#elif defined(__APPLE__) || defined(__MACH__)
+#include <sys/mman.h>
+
+DLL_EXPORT
+void*
+wv_allocate_page(size_t size) {
+    if (size % getpagesize() != 0) {
+        return NULL;
+    }
+    return mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+}
+
+DLL_EXPORT
+void*
+wv_allocate_huge(size_t size) {
+    return wv_allocate_page(size); // macOS does not support huge pages in the same way as Linux
+}
 
 #endif
