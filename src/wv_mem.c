@@ -112,10 +112,43 @@ wv_allocate_huge(size_t size) {
 }
 
 DLL_EXPORT
+void*
+wv_secure_allocate(size_t size) {
+    void * mem = wv_allocate_page(size);
+    if (!mem) {
+        return NULL;
+    }
+    if (!VirtualLock(mem, size)) {
+        VirtualFree(mem, 0, MEM_RELEASE);
+        return NULL;
+    }
+    #ifdef MADV_DONTDUMP
+    if (madvise(mem, size, MADV_DONTDUMP) != 0) {
+        VirtualFree(mem, 0, MEM_RELEASE);
+        return NULL;
+    }
+    #endif
+
+    return mem;
+}
+
+DLL_EXPORT
+void
+wv_secure_free(void* ptr, size_t size) {
+    if (ptr) {
+        SecureZeroMemory(ptr, size);
+        VirtualUnlock(ptr, size);
+        ptr = NULL; // Clear pointer to prevent accidental reuse
+    }
+}
+
+
+DLL_EXPORT
 void
 wv_free(void* ptr, size_t size) {
     if (ptr) {
         VirtualFree(ptr, 0, MEM_RELEASE);
+        ptr = NULL; // Clear pointer to prevent accidental reuse
     }
 }
 #elif defined(__linux__) || defined(__linux)
