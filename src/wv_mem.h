@@ -5,19 +5,25 @@
 #define DLL_EXPORT __declspec(dllexport)
 #define DLL_IMPORT __declspec(dllimport)
 #include <windows.h>
+#elif defined(__linux__) || defined(__linux)
+#include <sys/mman.h>
+#define DLL_EXPORT __attribute__((visibility("default")))
+#define DLL_IMPORT __attribute__((visibility("default")))
+#elif defined(__APPLE__) || defined(__MACH__)
+#include <sys/mman.h>
+#define DLL_EXPORT __attribute__((visibility("default")))
+#define DLL_IMPORT __attribute__((visibility("default")))
+#endif // OS checks
+
 
 DLL_EXPORT
-void* wv_allocate_huge(size_t size) {
-    // Large page allocation on Windows
+void* wv_allocate_huge(size_t size);
 
-    
-}
+DLL_EXPORT
+void* wv_allocate_page(size_t size);
 
+DLL_EXPORT
+void wv_free(void* ptr, size_t size);
 
-#elif defined(__linux__) || defined(__linux)
-
-#elif defined(__APPLE__) || defined(__MACH__)
-
-#endif // OS checks
 
 #endif // _WV_MEM_H
